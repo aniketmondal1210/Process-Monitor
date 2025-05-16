@@ -6,11 +6,11 @@ A web-based application that provides real-time monitoring of system processes, 
 
 ## 📊 Features
 
-- **Real-time System Monitoring**: Track CPU and memory usage with live updates
-- **Process Management**: View and filter running processes with detailed resource usage
-- **Interactive Charts**: Visualize system performance metrics with dynamic Chart.js graphs
-- **Responsive Design**: Works seamlessly on desktop and mobile devices
-- **Lightweight**: Minimal resource footprint while monitoring your system
+- **Real-time System Monitoring**: Track CPU and memory usage with live updates.
+- **Process Management**: View and filter running processes with detailed resource usage.
+- **Interactive Charts**: Visualize system performance metrics with dynamic Chart.js graphs.
+- **Responsive Design**: Works seamlessly on desktop and mobile devices.
+- **Lightweight**: Minimal resource footprint while monitoring your system.
 
 ## 🖥️ Screenshots
 
@@ -29,31 +29,35 @@ A web-based application that provides real-time monitoring of system processes, 
 ### Setup
 
 1. Clone the repository:
-\`\`\`bash
-git clone https://github.com/yourusername/process-monitor.git
-cd process-monitor
-\`\`\`
 
+   ```bash
+   git clone https://github.com/yourusername/process-monitor.git
+   cd process-monitor
+   
 2. Create a virtual environment:
-\`\`\`bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-\`\`\`
+
+   ```bash
+    python -m venv venv
+    source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 3. Install dependencies:
-\`\`\`bash
-pip install -r requirements.txt
-\`\`\`
+
+  ```bash
+    pip install -r requirements.txt
+  ```
 
 4. Run the application:
-\`\`\`bash
-python app.py
-\`\`\`
+
+  ```bash
+  python app.py
+```
 
 5. Open in your browser:
-\`\`\`
-http://localhost:5000
-\`\`\`
+
+  ```bash
+  http://localhost:5000
+  ```
+
 
 ## 🛠️ Technology Stack
 
@@ -73,9 +77,9 @@ Once the application is running:
 
 ## 🔧 Configuration
 
-You can modify the configuration in `config.py`:
+You can modify the configuration in config.py:
 
-```python
+python
 # Sample configuration
 CONFIG = {
     'UPDATE_INTERVAL': 2000,  # Update interval in milliseconds
