@@ -42,21 +42,21 @@ A web-based application that provides real-time monitoring of system processes, 
 
 3. Install dependencies:
 
-  ```bash
+    ```bash
     pip install -r requirements.txt
-  ```
+    ```
 
 4. Run the application:
 
-  ```bash
-  python app.py
-```
+    ```bash
+    python app.py
+    ```
 
 5. Open in your browser:
 
-  ```bash
-  http://localhost:5000
-  ```
+    ```bash
+    http://localhost:5000
+    ```
 
 
 ## 🛠️ Technology Stack
