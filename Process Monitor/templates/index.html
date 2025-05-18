@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Process Monitor - Easy System Monitoring</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-gradient"></script>
+</head>
+<body>
+    <!-- Help Modal -->
+    <div id="help-modal" class="help-modal">
+        <div class="help-modal-content">
+            <div class="help-modal-header">
+                <h2>Welcome to Process Monitor!</h2>
+                <button id="close-help" class="close-help">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="help-modal-body">
+                <p>This tool helps you see what's happening on your computer right now. Here's what you can do:</p>
+                
+                <h3>Understanding the Dashboard</h3>
+                <ul>
+                    <li><strong>CPU Usage</strong>: Shows how hard your computer's brain is working. Higher percentages mean your computer is working harder.</li>
+                    <li><strong>Memory Usage</strong>: Shows how much of your computer's short-term memory is being used. If this gets too high, your computer might slow down.</li>
+                    <li><strong>Processes</strong>: These are the programs and background tasks running on your computer right now.</li>
+                </ul>
+                
+                <h3>Reading the Charts</h3>
+                <p>The line charts show how CPU and memory usage change over time. Spikes mean sudden increases in usage.</p>
+                
+                <h3>Process List</h3>
+                <p>The table at the bottom shows all running programs. You can:</p>
+                <ul>
+                    <li>Search for specific programs</li>
+                    <li>See how much resources each program is using</li>
+                    <li>Check if a program is running, sleeping, or stopped</li>
+                </ul>
+                
+                <div class="help-tip">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 16v-4"></path>
+                        <path d="M12 8h.01"></path>
+                    </svg>
+                    <p>Look for the <span class="help-icon">?</span> icons throughout the app for more specific help!</p>
+                </div>
+            </div>
+            <div class="help-modal-footer">
+                <label class="dont-show-again">
+                    <input type="checkbox" id="dont-show-again"> Don't show this again
+                </label>
+                <button id="got-it" class="got-it-btn">Got it!</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <svg class="logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                    <line x1="8" y1="21" x2="16" y2="21"></line>
+                    <line x1="12" y1="17" x2="12" y2="21"></line>
+                </svg>
+                <h1>Process Monitor</h1>
+            </div>
+            <div class="sidebar-intro">
+                <p>Monitor your computer's performance and running programs in real-time.</p>
+            </div>
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                        <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                    </svg>
+                    Dashboard
+                </a>
+                <a href="#" class="nav-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    Help & Guide
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <button id="theme-toggle" class="theme-toggle" title="Switch between light and dark mode">
+                    <svg class="sun-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="5"></circle>
+                        <line x1="12" y1="1" x2="12" y2="3"></line>
+                        <line x1="12" y1="21" x2="12" y2="23"></line>
+                        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                        <line x1="1" y1="12" x2="3" y2="12"></line>
+                        <line x1="21" y1="12" x2="23" y2="12"></line>
+                        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                    <svg class="moon-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                </button>
+                <button id="show-help" class="show-help" title="Show help">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                    </svg>
+                </button>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <header class="main-header">
+                <div class="header-left">
+                    <button id="sidebar-toggle" class="sidebar-toggle">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="3" y1="12" x2="21" y2="12"></line>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <line x1="3" y1="18" x2="21" y2="18"></line>
+                        </svg>
+                    </button>
+                    <h2>System Dashboard</h2>
+                </div>
+                <div class="header-right">
+                    <div class="last-update">Last update: <span id="last-update-time">--:--:--</span></div>
+                    <button id="refresh-btn" class="refresh-btn" title="Get the latest information">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="refresh-icon">
+                            <path d="M23 4v6h-6"></path>
+                            <path d="M1 20v-6h6"></path>
+                            <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10"></path>
+                            <path d="M20.49 15a9 9 0 0 1-14.85 3.36L1 14"></path>
+                        </svg>
+                        Refresh
+                    </button>
+                </div>
+            </header>
+            
+            <div class="dashboard-intro">
+                <p>This dashboard shows you what's happening on your computer right now. The higher the percentages, the harder your computer is working.</p>
+            </div>
+            
+            <div class="dashboard-summary">
+                <div class="summary-card">
+                    <div class="summary-icon cpu-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect>
+                            <rect x="9" y="9" width="6" height="6"></rect>
+                            <line x1="9" y1="1" x2="9" y2="4"></line>
+                            <line x1="15" y1="1" x2="15" y2="4"></line>
+                            <line x1="9" y1="20" x2="9" y2="23"></line>
+                            <line x1="15" y1="20" x2="15" y2="23"></line>
+                            <line x1="20" y1="9" x2="23" y2="9"></line>
+                            <line x1="20" y1="14" x2="23" y2="14"></line>
+                            <line x1="1" y1="9" x2="4" y2="9"></line>
+                            <line x1="1" y1="14" x2="4" y2="14"></line>
+                        </svg>
+                    </div>
+                    <div class="summary-info">
+                        <div class="summary-header">
+                            <h3>CPU Usage</h3>
+                            <button class="info-tooltip" data-tooltip="CPU (Central Processing Unit) is your computer's brain. This percentage shows how hard it's working right now. Higher numbers mean your computer is busier.">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="cpu-info" class="summary-value">--.--%</div>
+                        <div class="summary-status">
+                            <div class="status-indicator">
+                                <span class="status-dot low"></span> Low
+                                <span class="status-dot medium"></span> Medium
+                                <span class="status-dot high"></span> High
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon memory-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 19v-3"></path>
+                            <path d="M10 19v-3"></path>
+                            <path d="M14 19v-3"></path>
+                            <path d="M18 19v-3"></path>
+                            <rect x="3" y="4" width="18" height="12" rx="2" ry="2"></rect>
+                        </svg>
+                    </div>
+                    <div class="summary-info">
+                        <div class="summary-header">
+                            <h3>Memory Usage</h3>
+                            <button class="info-tooltip" data-tooltip="Memory (RAM) is your computer's short-term memory. This shows how much is being used right now. If it gets too high, your computer might slow down.">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="memory-info" class="summary-value">--.--%</div>
+                        <div class="summary-status">
+                            <div class="status-indicator">
+                                <span class="status-dot low"></span> Low
+                                <span class="status-dot medium"></span> Medium
+                                <span class="status-dot high"></span> High
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-icon process-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"></path>
+                            <path d="M10 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"></path>
+                            <rect x="8" y="2" width="13" height="14" rx="2" ry="2"></rect>
+                        </svg>
+                    </div>
+                    <div class="summary-info">
+                        <div class="summary-header">
+                            <h3>Processes</h3>
+                            <button class="info-tooltip" data-tooltip="Processes are programs and background tasks running on your computer. This shows how many are running right now.">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <div id="process-count" class="summary-value">--</div>
+                        <div class="summary-description">Running programs</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="metrics-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h2>CPU Usage Over Time</h2>
+                            <button class="info-tooltip" data-tooltip="This chart shows how your CPU usage changes over time. Spikes mean your computer was working harder at those moments.">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="card-actions">
+                            <button class="card-action-btn" title="View Details">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <span class="legend-color cpu-color"></span>
+                                <span>CPU Usage %</span>
+                            </div>
+                        </div>
+                        <canvas id="cpu-chart"></canvas>
+                        <div class="chart-explanation">
+                            <p>Higher values mean your computer is working harder. Consistent high values might indicate a demanding program is running.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">
+                            <h2>Memory Usage Over Time</h2>
+                            <button class="info-tooltip" data-tooltip="This chart shows how your memory usage changes over time. Memory is your computer's short-term storage for running programs.">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"></circle>
+                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="card-actions">
+                            <button class="card-action-btn" title="View Details">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="11" cy="11" r="8"></circle>
+                                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="chart-legend">
+                            <div class="legend-item">
+                                <span class="legend-color memory-color"></span>
+                                <span>Memory Usage %</span>
+                            </div>
+                        </div>
+                        <canvas id="memory-chart"></canvas>
+                        <div class="chart-explanation">
+                            <p>Higher values mean more memory is being used. If memory usage is consistently high, consider closing some programs.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card process-list-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <h2>Running Programs</h2>
+                        <button class="info-tooltip" data-tooltip="This table shows all the programs currently running on your computer, how much resources they're using, and their current status.">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="card-actions">
+                        <div class="search-container">
+                            <input type="text" id="process-search" placeholder="Search programs..." class="search-input">
+                            <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="table-container">
+                        <table id="process-table">
+                            <thead>
+                                <tr>
+                                    <th>
+                                        <div class="th-content">
+                                            PID
+                                            <button class="info-tooltip" data-tooltip="PID stands for Process ID. It's a unique number assigned to each running program.">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <circle cx="12" cy="12" r="10"></circle>
+                                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </th>
+                                    <th>Program Name</th>
+                                    <th>
+                                        <div class="th-content">
+                                            CPU %
+                                            <button class="info-tooltip" data-tooltip="How much of your CPU (computer's brain) this program is using. Higher numbers mean the program is working harder.">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <circle cx="12" cy="12" r="10"></circle>
+                                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="th-content">
+                                            Memory %
+                                            <button class="info-tooltip" data-tooltip="How much of your computer's memory this program is using. Memory is like your computer's short-term memory.">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <circle cx="12" cy="12" r="10"></circle>
+                                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </th>
+                                    <th>
+                                        <div class="th-content">
+                                            Status
+                                            <button class="info-tooltip" data-tooltip="The current state of the program: Running (active), Sleeping (waiting), or Stopped (paused).">
+                                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <circle cx="12" cy="12" r="10"></circle>
+                                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="process-tbody">
+                                <tr>
+                                    <td colspan="6" class="loading-cell">
+                                        <div class="loading-spinner"></div>
+                                        Loading program data...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="process-table-help">
+                        <p><strong>What am I looking at?</strong> This table shows all programs currently running on your computer. Programs using a lot of CPU or memory might slow down your computer.</p>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // Pass configuration from Flask to JavaScript
+        const CONFIG = {
+            UPDATE_INTERVAL: "{{ config['UPDATE_INTERVAL']|tojson }}",
+            CHART_HISTORY: "{{ config['CHART_HISTORY']|tojson }}"
+        };
+    </script>
+    <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
